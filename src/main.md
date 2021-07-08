@@ -51,10 +51,7 @@ execute
 schedule clear spectral_necrosis:tick
 
 # Attempt to load the version if it matches.
-execute
-    if score spectral_necrosis.major load.status matches 0
-    if score spectral_necrosis.minor load.status matches 1
-    if score spectral_necrosis.patch load.status matches 0
+execute __version_check__
     run function spectral_necrosis:try_init
 ```
 
@@ -113,15 +110,15 @@ scoreboard players operation #tick_diff lepsen.lvar -= lepsen.current_tick lepse
 execute if score #tick_diff lepsen.lvar matches ..-1
     run scoreboard players add #tick_diff lepsen.lvar 16
 
+# Schedule the fast tick function to occur immediately.
+schedule function spectral_necrosis:tick 1t
+
 # Schedule the slow tick function based on the calculated tick offset.
 #!for i in range(16)
 #!set j = (i + 1) ~ "t"
 execute if score #tick_diff lepsen.lvar matches __i__
     run schedule function spectral_necrosis:slow_tick __j__
 #!endfor
-
-# Schedule the fast tick function to occur immediately.
-schedule function spectral_necrosis:tick 1t
 ```
 
 </details>

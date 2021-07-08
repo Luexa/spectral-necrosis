@@ -14,81 +14,9 @@ python = "^3.9"
 PyYAML = "^5.4.1"
 
 [tool.poetry.dev-dependencies]
-beet = "^0.33.0"
-lectern = "^0.15.1"
-lepsen_core = "^0.1.0"
-
-[tool.beet]
-output = "."
-data_pack.description.translate = "%1$s %2$s\n%3$s\n\n%4$s\n%5$s{{ translate_ns_1 }}"
-meta.translate_ns_1 = "%424868526$s%139498384$s%404526675$s%1585446912$s"
-
-# Development mode: output to folder.
-data_pack.name = "build"
-
-# Release mode: output to zip file.
-# data_pack.zipped = true
-# data_pack.name = "Spectral Necrosis"
-
-[[tool.beet.data_pack.description.with]]
-translate = "Spectral Necrosis{{ translate_ns_1 }}"
-color = "#9273ff"
-
-[[tool.beet.data_pack.description.with]]
-translate = "v%1$s{{ translate_ns_1 }}"
-color = "gold"
-with = ["0.1.0"]
-
-[[tool.beet.data_pack.description.with]]
-translate = "Dead players will become zombies that protect\nthe contents of the player's inventory.{{ translate_ns_1 }}"
-color = "#b8fcaa"
-
-[[tool.beet.data_pack.description.with]]
-translate = "Author: %1$s{{ translate_ns_1 }}"
-color = "yellow"
-with = [{ text = "Lue", color = "gray" }]
-
-[[tool.beet.data_pack.description.with]]
-translate = "License: %1$s{{ translate_ns_1 }}"
-color = "yellow"
-with = [{ translate = "MIT{{ translate_ns_1 }}", color = "gray" }]
-
-[[tool.beet.pipeline]]
-pipeline = [
-    "lepsen.core",
-    "beet.contrib.format_json",
-]
-meta.format_json.indent = 4
-
-[tool.beet.pipeline.meta.lepsen]
-tick_scheduler = true
-player_head = true
-
-[[tool.beet.pipeline]]
-require = [
-    "beet.contrib.inline_function_tag",
-    "beet.contrib.dundervar",
-    "lectern.contrib.yaml_to_json",
-    "src.rank_items",
-]
-pipeline = [
-    "lectern",
-    "beet.contrib.hangman",
-    "beet.contrib.render",
-    "beet.contrib.format_json",
-]
-
-[tool.beet.pipeline.meta]
-lectern.load = ["src/**/*.md"]
-hangman.match = ["*"]
-render.data_pack.functions = ["*"]
-render.data_pack.loot_tables = ["*"]
-render.data_pack.item_modifiers = ["*"]
-format_json.indent = 4
-version_check = "if score spectral_necrosis.major load.status matches 0 if score spectral_necrosis.minor load.status matches 1 if score spectral_necrosis.patch load.status matches 0"
-name_attribute_tag = "[I;-273140910,-2046802017,-1554998361,2049400368]"
-name_attribute_hex = "efb83352-8600-479f-a350-9ba77a275e30"
-translate_ns_1 = "%424868526$s%139498384$s%404526675$s%1585446912$s"
+beet = "^0.35.1"
+lectern = "^0.15.2"
+lepsen_core = "^0.1.1"
 
 [build-system]
 requires = ["poetry-core>=1.0.0"]

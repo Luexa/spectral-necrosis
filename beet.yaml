@@ -1,0 +1,69 @@
+meta:
+  translate_ns_1: "%424868526$s%139498384$s%404526675$s%1585446912$s"
+data_pack:
+  name: build
+  description:
+    translate: "%1$s %2$s\n%3$s\n\n%4$s\n%5$s{{ translate_ns_1 }}"
+    with:
+      - translate: "Spectral Necrosis{{ translate_ns_1 }}"
+        color: "#9273ff"
+      - translate: "v%1$s{{ translate_ns_1 }}"
+        with: ["0.1.0"]
+        color: gold
+      - translate: |-
+          Dead players will become zombies that protect
+          the contents of the player's inventory.{{ translate_ns_1 }}
+        color: "#b8fcaa"
+      - translate: "Author: %1$s{{ translate_ns_1 }}"
+        with: [{text: Lue, color: gray}]
+        color: yellow
+      - translate: "License: %1$s{{ translate_ns_1 }}"
+        with: [{translate: "MIT{{ translate_ns_1 }}", color: gray}]
+        color: yellow
+
+pipeline:
+  # Generate and configure Lepsen Core data pack.
+  - pipeline:
+      - lepsen.core
+      - beet.contrib.format_json
+    meta:
+      lepsen:
+        tick_scheduler: true
+        player_head: true
+      format_json:
+        indent: 4
+
+  # Generate and configure Spectral Necrosis data pack.
+  - require:
+      - beet.contrib.inline_function_tag
+      - beet.contrib.dundervar
+      - lectern.contrib.yaml_to_json
+      - src.rank_items
+    pipeline:
+      - lectern
+      - beet.contrib.render
+      - beet.contrib.hangman
+      - beet.contrib.format_json
+    meta:
+      lectern:
+        load: ["src/**/*.md"]
+      hangman:
+        match: ["*"]
+      render:
+        data_pack:
+          functions: ["*"]
+          loot_tables: ["*"]
+          item_modifiers: ["*"]
+      format_json:
+        indent: 4
+      version_check: >-
+        if score spectral_necrosis.major load.status matches 0
+        if score spectral_necrosis.minor load.status matches 1
+        if score spectral_necrosis.patch load.status matches 0
+      name_attribute_tag: "[I;-273140910,-2046802017,-1554998361,2049400368]"
+      name_attribute_hex: "efb83352-8600-479f-a350-9ba77a275e30"
+      translate_ns_1: "%424868526$s%139498384$s%404526675$s%1585446912$s"
+
+# We do not have multiple data packs or resource packs, so it is fine to output
+# the generated data pack to the project's root directory.
+output: .
