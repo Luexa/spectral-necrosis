@@ -1,7 +1,7 @@
 meta:
   translate_ns_1: "%424868526$s%139498384$s%404526675$s%1585446912$s"
 data_pack:
-  name: build
+  name: spectral_necrosis
   description:
     translate: "%1$s %2$s\n%3$s\n\n%4$s\n%5$s{{ translate_ns_1 }}"
     with:
@@ -63,7 +63,3 @@ pipeline:
       name_attribute_tag: "[I;-273140910,-2046802017,-1554998361,2049400368]"
       name_attribute_hex: "efb83352-8600-479f-a350-9ba77a275e30"
       translate_ns_1: "%424868526$s%139498384$s%404526675$s%1585446912$s"
-
-# We do not have multiple data packs or resource packs, so it is fine to output
-# the generated data pack to the project's root directory.
-output: .
