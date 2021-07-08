@@ -5,7 +5,7 @@
 [Poetry]: https://pypi.org/project/poetry/
 [MIT License]: LICENSE
 [`pyproject.toml`]: pyproject.toml
-[`beet.yaml`]: beet.yaml
+[`beet-project.yaml`]: beet-project.yaml
 
 # Spectral Necrosis
 
@@ -28,7 +28,8 @@ poetry install
 poetry run beet build
 ```
 
-Python dependencies are specified in [`pyproject.toml`], whereas Beet plugin configuration is declared in [`beet.yaml`].
+Python dependencies are specified in [`pyproject.toml`], whereas Beet project configuration is declared in [`beet-project.yaml`].
+Upon building the data pack, it will be output in both folder and zipfile form in the `build` directory.
 
 ## License
 
