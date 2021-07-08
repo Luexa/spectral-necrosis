@@ -5,6 +5,7 @@
 [Poetry]: https://pypi.org/project/poetry/
 [MIT License]: LICENSE
 [`pyproject.toml`]: pyproject.toml
+[`beet.yaml`]: beet.yaml
 
 # Spectral Necrosis
 
@@ -27,7 +28,7 @@ poetry install
 poetry run beet build
 ```
 
-Beet configuration is declared inline, under `[tool.beet]` in [`pyproject.toml`].
+Python dependencies are specified in [`pyproject.toml`], whereas Beet plugin configuration is declared in [`beet.yaml`].
 
 ## License
 
