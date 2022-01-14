@@ -2,6 +2,7 @@
 [releases page]: https://github.com/Luewd/spectral-necrosis/releases/latest
 [Beet]: https://github.com/mcbeet/beet
 [Lectern]: https://github.com/mcbeet/lectern
+[Mecha]: https://github.com/mcbeet/mecha
 [Poetry]: https://pypi.org/project/poetry/
 [MIT License]: LICENSE
 [`pyproject.toml`]: pyproject.toml
@@ -15,7 +16,7 @@ Spectral Necrosis is a Minecraft data pack that causes dead players to become zo
 
 ## Development
 
-Spectral Necrosis uses the [Beet] and [Lectern] toolchains for ease of development and enhanced maintainability.
+Spectral Necrosis uses the [Beet], [Lectern], and [Mecha] toolchains for ease of development and enhanced maintainability.
 As such, the pack must be built with the help of some Python packages before it can be included in your world.
 
 Please refer to the [releases page] if you are an ordinary user.

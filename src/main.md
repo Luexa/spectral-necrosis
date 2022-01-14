@@ -29,19 +29,19 @@ values:
 `@function spectral_necrosis:enumerate`
 ```mcfunction
 #!tag "spectral_necrosis:enumerate"
-# Store version 0.1.0 in scoreboards unless a newer version is also loaded.
+# Store version 0.1.1 in scoreboards unless a newer version is also loaded.
 execute
-    unless score spectral_necrosis.major load.status matches 0..
-    run scoreboard players set spectral_necrosis.major load.status 0
+  unless score spectral_necrosis.major load.status matches 0..
+  run scoreboard players set spectral_necrosis.major load.status 0
 execute
-    if score spectral_necrosis.major load.status matches 0
-    unless score spectral_necrosis.minor load.status matches 1..
-    run scoreboard players set spectral_necrosis.minor load.status 1
+  if score spectral_necrosis.major load.status matches 0
+  unless score spectral_necrosis.minor load.status matches 1..
+  run scoreboard players set spectral_necrosis.minor load.status 1
 execute
-    if score spectral_necrosis.major load.status matches 0
-    if score spectral_necrosis.minor load.status matches 1
-    unless score spectral_necrosis.patch load.status matches 0..
-    run scoreboard players set spectral_necrosis.patch load.status 0
+  if score spectral_necrosis.major load.status matches 0
+  if score spectral_necrosis.minor load.status matches 1
+  unless score spectral_necrosis.patch load.status matches 1..
+  run scoreboard players set spectral_necrosis.patch load.status 1
 ```
 
 `@function spectral_necrosis:resolve`
@@ -52,7 +52,7 @@ schedule clear spectral_necrosis:tick
 
 # Attempt to load the version if it matches.
 execute __version_check__
-    run function spectral_necrosis:try_init
+  run function spectral_necrosis:try_init
 ```
 
 `@function spectral_necrosis:try_init`
@@ -60,20 +60,20 @@ execute __version_check__
 # Store result of dependency version check in temporary scoreboard.
 scoreboard players set #spectral_necrosis load.status 0
 execute
-    if score #lepsen_core.compat load.status matches 1
-    if data storage lepsen:core compat{
-        objectives: 1,
-        tick_scheduler: 1
-    }
-    run scoreboard players set #spectral_necrosis load.status 1
+  if score #lepsen_core.compat load.status matches 1
+  if data storage lepsen:core compat{
+    objectives: 1,
+    tick_scheduler: 1
+  }
+  run scoreboard players set #spectral_necrosis load.status 1
 
 # If dependencies were loaded correctly, initialize the data pack.
 execute if score #spectral_necrosis load.status matches 1
-    run function spectral_necrosis:init
+  run function spectral_necrosis:init
 
 # If the dependency failed to load, clean up scoreboards.
 execute if score #spectral_necrosis load.status matches 0
-    run function spectral_necrosis:fail_init
+  run function spectral_necrosis:fail_init
 
 # Clear the temporary scoreboard.
 scoreboard players reset #spectral_necrosis load.status
@@ -103,12 +103,12 @@ scoreboard objectives add lue.unpl.deaths minecraft.custom:minecraft.deaths
 scoreboard players reset * lue.unpl.deaths
 
 # Calculate tick offset to wait before scheduling the slow tick function.
-execute unless score spectral_necrosis.tick lepsen.lvar matches 0..15
-    run scoreboard players set spectral_necrosis.tick lepsen.lvar 0
-scoreboard players operation #tick_diff lepsen.lvar = spectral_necrosis.tick lepsen.lvar
+execute unless score spectral_necrosis.tick lepsen.pvar matches 0..15
+  run scoreboard players set spectral_necrosis.tick lepsen.pvar 0
+scoreboard players operation #tick_diff lepsen.lvar = spectral_necrosis.tick lepsen.pvar
 scoreboard players operation #tick_diff lepsen.lvar -= lepsen.current_tick lepsen.pvar
 execute if score #tick_diff lepsen.lvar matches ..-1
-    run scoreboard players add #tick_diff lepsen.lvar 16
+  run scoreboard players add #tick_diff lepsen.lvar 16
 
 # Schedule the fast tick function to occur immediately.
 schedule function spectral_necrosis:tick 1t
@@ -117,7 +117,7 @@ schedule function spectral_necrosis:tick 1t
 #!for i in range(16)
 #!set j = (i + 1) ~ "t"
 execute if score #tick_diff lepsen.lvar matches __i__
-    run schedule function spectral_necrosis:slow_tick __j__
+  run schedule function spectral_necrosis:slow_tick __j__
 #!endfor
 ```
 
@@ -172,7 +172,7 @@ criteria:
               type: minecraft:fixed
               name: spectral_necrosis.patch
             score: load.status
-          range: 0
+          range: 1
 ```
 
 `@function spectral_necrosis:death`
@@ -187,28 +187,27 @@ function #spectral_necrosis:death_check
 
 # Summon and initialize the undead player.
 execute unless score spectral_necrosis.disable lepsen.lvar matches 1
-    if entity @s[gamemode=!creative,gamemode=!spectator]
-    run summon minecraft:zombie ~ ~ ~ {
-        Tags: [
-            spectral_necrosis.undead,
-            spectral_necrosis.new,
-            global.ignore.modify
-        ],
-        ArmorDropChances: [-300f, -300f, -300f, -300f],
-        HandDropChances: [-300f, -300f],
-        PersistenceRequired: 1b,
-        CustomNameVisible: 1b,
-        DeathLootTable: "minecraft:empty"
-    }
+  if entity @s[gamemode=!creative,gamemode=!spectator]
+  run summon minecraft:zombie ~ ~ ~ {
+    Tags: [
+      spectral_necrosis.undead,
+      spectral_necrosis.new
+    ],
+    ArmorDropChances: [-300f, -300f, -300f, -300f],
+    HandDropChances: [-300f, -300f],
+    PersistenceRequired: 1b,
+    CustomNameVisible: 1b,
+    DeathLootTable: "minecraft:empty"
+  }
 scoreboard players reset spectral_necrosis.disable lepsen.lvar
 
 # Generate player skull to access the dead player's name.
 loot replace entity @e[type=minecraft:zombie,tag=spectral_necrosis.new,distance=0,limit=1]
-    armor.head loot lepsen:core/player_head
+  armor.head loot lepsen:core/player_head
 
 # Initialize the undead player and its inventory.
 execute as @e[type=minecraft:zombie,tag=spectral_necrosis.new,distance=0,limit=1]
-    run function spectral_necrosis:undead/initialize_zombie
+  run function spectral_necrosis:undead/initialize_zombie
 ```
 
 `@function spectral_necrosis:undead/initialize_zombie`
@@ -219,33 +218,33 @@ tag @s remove spectral_necrosis.new
 # Set undead player health to 1024 so it will not die naturally.
 attribute @s minecraft:generic.max_health base set 1024
 data modify storage spectral_necrosis:data zombie_data set value
-    {
-        Health: 1024f,
-        HandItems: [{}, {}],
-        ArmorItems: [{}, {}, {}, {}]
-    }
+  {
+    Health: 1024f,
+    HandItems: [{}, {}],
+    ArmorItems: [{}, {}, {}, {}]
+  }
 
 # Generate a custom attribute to store the player's name within the entity.
 data modify storage spectral_necrosis:data name_attribute
-    set value {
-        UUID: __name_attribute_tag__,
-        Amount: 0d,
-        Operation: 0
-    }
+  set value {
+    UUID: __name_attribute_tag__,
+    Amount: 0d,
+    Operation: 0
+  }
 data modify storage spectral_necrosis:data name_attribute.Name
-    set from entity @s ArmorItems[3].tag.SkullOwner.Name
+  set from entity @s ArmorItems[3].tag.SkullOwner.Name
 
 # Process the player name to produce a string in the format of "Undead PlayerName".
 item modify entity @s armor.head spectral_necrosis:zombie_name
 data modify storage spectral_necrosis:data zombie_data.CustomName
-    set from entity @s ArmorItems[3].tag.display.Name
+  set from entity @s ArmorItems[3].tag.display.Name
 
 # Add the custom attribute to the undead player.
 data modify entity @s
-    Attributes[{
-        Name: "minecraft:generic.movement_speed"
-    }].Modifiers
-    append from storage spectral_necrosis:data name_attribute
+  Attributes[{
+    Name: "minecraft:generic.movement_speed"
+  }].Modifiers
+  append from storage spectral_necrosis:data name_attribute
 data remove storage spectral_necrosis:data name_attribute
 
 # Initialize item ranking trackers with sentinel vlaues.
@@ -261,33 +260,33 @@ scoreboard players set #spectral_necrosis.best_helmet lepsen.lvar -1
 # one of the possible death positions (varies based on crawling/sneaking).
 data remove storage spectral_necrosis:data items
 execute as @e[type=minecraft:item,dx=0,dy=0.32,dz=0,nbt={Age:0s}]
-    run function spectral_necrosis:rank/start
+  run function spectral_necrosis:rank/start
 
 # Equip items set aside during the item categorization process.
 data modify storage spectral_necrosis:data zombie_data.HandItems[0]
-    merge from storage spectral_necrosis:data items.mainhand
+  merge from storage spectral_necrosis:data items.mainhand
 data modify storage spectral_necrosis:data zombie_data.HandItems[1]
-    merge from storage spectral_necrosis:data items.offhand
+  merge from storage spectral_necrosis:data items.offhand
 data modify storage spectral_necrosis:data zombie_data.ArmorItems[0]
-    merge from storage spectral_necrosis:data items.boots
+  merge from storage spectral_necrosis:data items.boots
 data modify storage spectral_necrosis:data zombie_data.ArmorItems[1]
-    merge from storage spectral_necrosis:data items.leggings
+  merge from storage spectral_necrosis:data items.leggings
 data modify storage spectral_necrosis:data zombie_data.ArmorItems[2]
-    merge from storage spectral_necrosis:data items.chestplate
+  merge from storage spectral_necrosis:data items.chestplate
 data modify storage spectral_necrosis:data zombie_data.ArmorItems[3]
-    merge from storage spectral_necrosis:data items.helmet
+  merge from storage spectral_necrosis:data items.helmet
 
 # Add a placeholder item to the boots slot if the zombie does not have any boots.
 execute unless data storage spectral_necrosis:data zombie_data.ArmorItems[0].id
-    run data modify storage spectral_necrosis:data zombie_data.ArmorItems[0]
-        merge value {id: "minecraft:rotten_flesh", Count: 1b}
+  run data modify storage spectral_necrosis:data zombie_data.ArmorItems[0]
+    merge value {id: "minecraft:rotten_flesh", Count: 1b}
 
 # If the player had a trident, set it aside so the undead player can equip it
 # in the case that it becomes a drowned.
 execute if data storage spectral_necrosis:data items.trident
-    run data modify storage spectral_necrosis:data
-        zombie_data.ArmorItems[0].tag.spectral_necrosis.trident
-        set from storage spectral_necrosis:data items.trident
+  run data modify storage spectral_necrosis:data
+    zombie_data.ArmorItems[0].tag.spectral_necrosis.trident
+    set from storage spectral_necrosis:data items.trident
 
 # Merge the generated zombie NBT with the undead player.
 data modify entity @s {} merge from storage spectral_necrosis:data zombie_data
@@ -320,7 +319,7 @@ name:
 # exact required position, since the dx/dy/dz check is not precise enough.
 #!for i in (1.32, 0.97, 0.1)
 execute positioned ~ ~__i__ ~ if entity @s[distance=..0.00001]
-    run function spectral_necrosis:rank/main
+  run function spectral_necrosis:rank/main
 #!endfor
 ```
 
@@ -335,7 +334,7 @@ scoreboard players set #spectral_necrosis.matched lepsen.lvar 0
 # Append item to undead player's inventory and store ID length in a fake player.
 data modify storage spectral_necrosis:data items.current set from entity @s Item
 execute store result score #spectral_necrosis.name_length lepsen.lvar
-    run data get storage spectral_necrosis:data items.current.id
+  run data get storage spectral_necrosis:data items.current.id
 
 # Minimize NBT checks by dispatching item ranking process over item ID length.
 __item_tree__
@@ -343,13 +342,13 @@ __item_tree__
 # If the function tree did not find a category for this item, it may be placed
 # in the zombie's mainhand slot if there are no other candidates.
 execute if score #spectral_necrosis.matched lepsen.lvar matches 0
-    if score #spectral_necrosis.best_mainhand lepsen.lvar matches -1
-    run function spectral_necrosis:rank/mainhand/0
+  if score #spectral_necrosis.best_mainhand lepsen.lvar matches -1
+  run function spectral_necrosis:rank/mainhand/0
 
 # Add this item to the undead player's inventory.
 data modify storage spectral_necrosis:data
-    zombie_data.ArmorItems[0].tag.spectral_necrosis.inventory
-    append from storage spectral_necrosis:data items.current
+  zombie_data.ArmorItems[0].tag.spectral_necrosis.inventory
+  append from storage spectral_necrosis:data items.current
 ```
 
 `@item_ranks`
@@ -419,9 +418,9 @@ schedule function spectral_necrosis:tick 1t
 # which would be enough to kill a normal zombie). We process death manually so
 # we can expand the inventory being held by the zombie.
 execute as @e[type=minecraft:zombie,tag=spectral_necrosis.undead]
-    run function spectral_necrosis:drop_items/check
+  run function spectral_necrosis:drop_items/check
 execute as @e[type=minecraft:drowned,tag=spectral_necrosis.undead]
-    run function spectral_necrosis:drop_items/check
+  run function spectral_necrosis:drop_items/check
 ```
 
 `@function spectral_necrosis:drop_items/check`
@@ -429,9 +428,9 @@ execute as @e[type=minecraft:drowned,tag=spectral_necrosis.undead]
 # Undead player max health is 1024; check if it reaches 1004 health or below, in
 # which case it should die and drop its inventory.
 execute store result score #health lepsen.lvar
-    run data get entity @s Health 10000
+  run data get entity @s Health 10000
 execute if score #health lepsen.lvar matches ..10040000
-    run function spectral_necrosis:drop_items/main
+  run function spectral_necrosis:drop_items/main
 ```
 
 `@function spectral_necrosis:drop_items/main`
@@ -441,8 +440,8 @@ kill @s
 
 # Copy the undead player's inventory into storage, then drop each item one by one.
 data modify storage spectral_necrosis:data inventory
-    set from entity @s ArmorItems[0].tag.spectral_necrosis.inventory
-execute at @s run function spectral_necrosis:drop_items/loop
+  set from entity @s ArmorItems[0].tag.spectral_necrosis.inventory
+execute if data storage spectral_necrosis:data inventory[-1] at @s run function spectral_necrosis:drop_items/loop
 data remove storage spectral_necrosis:data inventory
 ```
 
@@ -453,21 +452,21 @@ loot spawn ~ ~ ~ loot spectral_necrosis:base_item
 
 # Replace the spawned item with an item from the undead player's inventory.
 data modify entity
-    @e[type=minecraft:item,nbt={
-        Item: {
-            tag: {
-                spectral_necrosis: {
-                    base_item:1b
-                }
-            }
+  @e[type=minecraft:item,nbt={
+    Item: {
+      tag: {
+        spectral_necrosis: {
+          base_item:1b
         }
-    },limit=1] Item
-    set from storage spectral_necrosis:data inventory[-1]
+      }
+    }
+  },limit=1] Item
+  set from storage spectral_necrosis:data inventory[-1]
 
 # Move on to the next item in the inventory.
 data remove storage spectral_necrosis:data inventory[-1]
 execute if data storage spectral_necrosis:data inventory[-1]
-    run function spectral_necrosis:drop_items/loop
+  run function spectral_necrosis:drop_items/loop
 ```
 
 `@loot_table spectral_necrosis:base_item`
@@ -496,23 +495,23 @@ schedule function spectral_necrosis:slow_tick 16t
 
 # Process custom undead player drowning.
 execute as @e[type=minecraft:zombie,tag=spectral_necrosis.undead]
-    run function spectral_necrosis:drown/check_conversion
+  run function spectral_necrosis:drown/check_conversion
 ```
 
 `@function spectral_necrosis:drown/check_conversion`
 ```mcfunction
 # Process drowned conversion manually so we can apply custom logic to it.
 execute store result score #spectral_necrosis.conversion_time lepsen.lvar
-    run data get entity @s DrownedConversionTime
+  run data get entity @s DrownedConversionTime
 execute if score #spectral_necrosis.conversion_time lepsen.lvar matches 0..
-    run function spectral_necrosis:drown/update_conversion
+  run function spectral_necrosis:drown/update_conversion
 ```
 
 `@function spectral_necrosis:drown/update_conversion`
 ```mcfunction
 # Drowned conversion takes (15s * 20t/s) so it is our starting point.
 execute unless score @s lue.unpl.drown = @s lue.unpl.drown
-    run scoreboard players set @s lue.unpl.drown 300
+  run scoreboard players set @s lue.unpl.drown 300
 
 # Calculate how much the zombie has drowned since the last call to this function.
 scoreboard players set #spectral_necrosis.conversion_diff lepsen.lvar 300
@@ -521,11 +520,11 @@ scoreboard players operation @s lue.unpl.drown -= #spectral_necrosis.conversion_
 
 # Reset the zombie's DrownedConversionTime so it doesn't drown naturally.
 execute if score @s lue.unpl.drown matches 0..
-    run data modify entity @s DrownedConversionTime set value 300
+  run data modify entity @s DrownedConversionTime set value 300
 
 # The conversion is now complete; spawn a new drowned and copy the zombie's data.
 execute if score @s lue.unpl.drown matches ..-1 at @s
-    run function spectral_necrosis:drown/finish_drowning
+  run function spectral_necrosis:drown/finish_drowning
 ```
 
 `@function spectral_necrosis:drown/finish_drowning`
@@ -536,20 +535,19 @@ data merge entity @s {Health:0f,DeathTime:19s}
 
 # Summon the drowned and initialize it based on the contents of storage.
 summon minecraft:drowned ~ ~ ~
-    {
-        Tags: [
-            spectral_necrosis.undead,
-            spectral_necrosis.new,
-            global.ignore.modify
-        ],
-        ArmorDropChances: [-300f, -300f, -300f, -300f],
-        HandDropChances: [-300f, -300f],
-        PersistenceRequired: 1b,
-        CustomNameVisible: 1b,
-        DeathLootTable: "minecraft:empty"
-    }
+  {
+    Tags: [
+      spectral_necrosis.undead,
+      spectral_necrosis.new
+    ],
+    ArmorDropChances: [-300f, -300f, -300f, -300f],
+    HandDropChances: [-300f, -300f],
+    PersistenceRequired: 1b,
+    CustomNameVisible: 1b,
+    DeathLootTable: "minecraft:empty"
+  }
 execute as @e[type=minecraft:drowned,tag=spectral_necrosis.new,limit=1,distance=0]
-    run function spectral_necrosis:drown/initialize_drowned
+  run function spectral_necrosis:drown/initialize_drowned
 
 # Clear storage to avoid deep comparison when this function is next called.
 data remove storage spectral_necrosis:data zombie_data
@@ -568,35 +566,35 @@ data modify storage spectral_necrosis:data drowned_data set value {Health:1024f}
 # Generate name for entity ("Drowned PlayerName") based on a string form of the
 # player name hidden inside of an attribute modifier.
 data modify storage spectral_necrosis:data name_attribute
-    set from storage spectral_necrosis:data zombie_data.Attributes[{
-        Name: "minecraft:generic.movement_speed"
-    }].Modifiers[{
-        UUID: __name_attribute_tag__
-    }]
+  set from storage spectral_necrosis:data zombie_data.Attributes[{
+    Name: "minecraft:generic.movement_speed"
+  }].Modifiers[{
+    UUID: __name_attribute_tag__
+  }]
 loot replace entity @s armor.head
-    loot spectral_necrosis:drowned_name
+  loot spectral_necrosis:drowned_name
 data modify storage spectral_necrosis:data drowned_data.CustomName
-    set from entity @s ArmorItems[3].tag.display.Name
+  set from entity @s ArmorItems[3].tag.display.Name
 
 # Copy other tags from zombie to drowned.
 data modify storage spectral_necrosis:data drowned_data.ArmorItems
-    set from storage spectral_necrosis:data zombie_data.ArmorItems
+  set from storage spectral_necrosis:data zombie_data.ArmorItems
 data modify storage spectral_necrosis:data drowned_data.HandItems
-    set from storage spectral_necrosis:data zombie_data.HandItems
-    
+  set from storage spectral_necrosis:data zombie_data.HandItems
+  
 # If the zombie had a trident, the drowned should use it as a weapon.
 execute if data storage spectral_necrosis:data
+  zombie_data.ArmorItems[0].tag.spectral_necrosis.trident
+  run data modify storage spectral_necrosis:data drowned_data.HandItems[0]
+    set from storage spectral_necrosis:data
     zombie_data.ArmorItems[0].tag.spectral_necrosis.trident
-    run data modify storage spectral_necrosis:data drowned_data.HandItems[0]
-        set from storage spectral_necrosis:data
-        zombie_data.ArmorItems[0].tag.spectral_necrosis.trident
 
 # Copy player name attribute from zombie to drowned.
 data modify entity @s
-    Attributes[{
-        Name: "minecraft:generic.movement_speed"
-    }].Modifiers
-    append from storage spectral_necrosis:data name_attribute
+  Attributes[{
+    Name: "minecraft:generic.movement_speed"
+  }].Modifiers
+  append from storage spectral_necrosis:data name_attribute
 data remove storage spectral_necrosis:data name_attribute
 
 # Update the drowned based on the contents of storage.
@@ -634,7 +632,7 @@ pools:
 # Disable undead player spawning if the world's difficulty is Peaceful.
 execute store result score #spectral_necrosis.difficulty lepsen.lvar run difficulty
 execute if score #spectral_necrosis.difficulty lepsen.lvar matches 0
-    run scoreboard players set spectral_necrosis.disable lepsen.lvar 1
+  run scoreboard players set spectral_necrosis.disable lepsen.lvar 1
 ```
 
 </details>

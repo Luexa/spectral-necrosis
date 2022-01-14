@@ -1,10 +1,12 @@
 [tool.poetry]
 name = "undead-players"
-version = "0.1.0"
+version = "0.1.1"
 description = "Dead players will become zombies that protect the contents of the player's inventory."
 authors = ["Lue <lue@lued.me>"]
 license = "MIT"
 readme = "README.md"
+homepage = "https://github.com/Luexa/spectral-necrosis"
+repository = "https://github.com/Luexa/spectral-necrosis"
 classifiers = [
     "Private :: Do Not Publish"
 ]
@@ -14,9 +16,11 @@ python = "^3.9"
 PyYAML = "^5.4.1"
 
 [tool.poetry.dev-dependencies]
-beet = "^0.35.1"
-lectern = "^0.15.2"
-lepsen_core = "^0.1.1"
+black = { version = "^21.12b0", allow-prereleases = true }
+beet = "^0.50.3"
+lectern = "^0.18.2"
+mecha = "^0.34.0"
+lepsen_core = { version = "^0.2.0rc1", allow-prereleases = true }
 
 [tool.beet]
 output = "build"

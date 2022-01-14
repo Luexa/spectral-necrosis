@@ -8,7 +8,7 @@ data_pack:
       - translate: "Spectral Necrosis{{ translate_ns_1 }}"
         color: "#9273ff"
       - translate: "v%1$s{{ translate_ns_1 }}"
-        with: ["0.1.0"]
+        with: ["0.1.1"]
         color: gold
       - translate: |-
           Dead players will become zombies that protect
@@ -42,13 +42,13 @@ pipeline:
     pipeline:
       - lectern
       - beet.contrib.render
-      - beet.contrib.hangman
+      - mecha
       - beet.contrib.format_json
     meta:
       lectern:
         load: ["src/**/*.md"]
-      hangman:
-        match: ["*"]
+      mecha:
+        multiline: true
       render:
         data_pack:
           functions: ["*"]
@@ -59,7 +59,7 @@ pipeline:
       version_check: >-
         if score spectral_necrosis.major load.status matches 0
         if score spectral_necrosis.minor load.status matches 1
-        if score spectral_necrosis.patch load.status matches 0
+        if score spectral_necrosis.patch load.status matches 1
       name_attribute_tag: "[I;-273140910,-2046802017,-1554998361,2049400368]"
       name_attribute_hex: "efb83352-8600-479f-a350-9ba77a275e30"
       translate_ns_1: "%424868526$s%139498384$s%404526675$s%1585446912$s"
